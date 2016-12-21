@@ -23,12 +23,12 @@ MCU=atmega324pa
 
 # Nom de votre projet
 # (utilisez un seul mot, exemple: 'monprojet')
-PROJECTNAME=test32bits
+PROJECTNAME=mylib
 
 # Fichiers sources
 # (Listez tous les fichiers a compiler, ex: 'tp1.c, tp2.cpp'):
 # Utilisez le suffixe .cpp pour les fichiers C++
-PRJSRC= compteur32bits.cpp
+PRJSRC= Librairie.cpp
 
 # Inclusions additionnels (ex: -I/path/to/mydir)
 INC=
@@ -91,7 +91,7 @@ LDFLAGS=-Wl,-Map,$(TRG).map -mmcu=$(MCU)
 ####### Cible (Target) #######
 
 #Nom des cibles par defaut
-TRG=$(PROJECTNAME).out
+TRG=$(PROJECTNAME).a
 HEXROMTRG=$(PROJECTNAME).hex
 HEXTRG=$(HEXROMTRG) $(PROJECTNAME).ee.hex
 
@@ -131,8 +131,7 @@ all: $(TRG)
 
 # Implementation de la cible
 $(TRG): $(OBJDEPS)
-	$(CC) $(LDFLAGS) -o $(TRG) $(OBJDEPS) \
-	-lm $(LIBS)
+	ar rsv -o $(TRG) $(OBJDEPS)
 
 # Production des fichiers object
 # De C a objet
@@ -147,18 +146,6 @@ $(TRG): $(OBJDEPS)
 
 # Pour plus d'information sur cette section, consulter:
 # http://bit.ly/2580FU8
-
-# Production des fichiers hex a partir des fichiers elf
-%.hex: %.out
-	$(OBJCOPY) -j .text -j .data \
-		-O $(HEXFORMAT) $< $@
-
-# Make install permet de compiler le projet puis
-# d'ecrire le programme en memoire flash dans votre
-# microcontroleur. Celui-ci doit etre branche par cable USB
-install: $(HEXROMTRG)
-	$(AVRDUDE) -c $(AVRDUDE_PROGRAMMERID)   \
-	-p $(MCU) -P -e -U flash:w:$(HEXROMTRG)
 
 # Make clean permet d'effacer tout les fichiers generes
 # lors de la compilation
